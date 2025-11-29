@@ -1,14 +1,28 @@
 package ru.qpoto;
 
+import java.util.stream.IntStream;
+
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        for (int i = 0; i < 100; i++) {
-            Thread threadHydrogen = new Thread(new ReleaseHydrogen());
-            Thread threadOxygen = new Thread(new ReleaseOxygen());
-            threadHydrogen.start();
-            threadOxygen.start();
-            threadOxygen.join();
-            threadHydrogen.join();
-        }
+        IntStream.range(0, 100).forEach(i -> {
+            Thread h1 = new Thread(new ReleaseHydrogen());
+            Thread h2 = new Thread(new ReleaseHydrogen());
+            Thread o  = new Thread(new ReleaseOxygen());
+
+            h1.start();
+            h2.start();
+            o.start();
+
+            try {
+                o.join();
+                h1.join();
+                h2.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+
+            System.out.println();
+        });
     }
 }
